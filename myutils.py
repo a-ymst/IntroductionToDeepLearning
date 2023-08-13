@@ -1,3 +1,6 @@
+import torch                                        # PyTorch
+import torchvision                                  # PyTorch library for image processing
+import numpy as np                                  # for scientific computing (e.g. culclations with array)
 import matplotlib.pyplot as plt                     # for visualization
 
 # h should be a list like [epoch, loss_train, acc_train, loss_test, acc_test]
