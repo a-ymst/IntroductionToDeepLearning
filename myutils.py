@@ -1,4 +1,4 @@
-
+import matplotlib.pyplot as plt                     # for visualization
 
 # h should be a list like [epoch, loss_train, acc_train, loss_test, acc_test]
 def show_learning_curve(h):
@@ -20,7 +20,6 @@ def show_learning_curve(h):
     plt.ylabel("Accuracy")
     plt.legend()
     plt.show()
-
 
 
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
