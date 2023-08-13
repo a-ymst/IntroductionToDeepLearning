@@ -50,3 +50,41 @@ def show_confusion_matrix(model, data_loader, class_names, device):
     cm = confusion_matrix(y_pred=pred_list, y_true=true_list)
     cmp = ConfusionMatrixDisplay(cm, display_labels=class_names)
     cmp.plot(cmap=plt.cm.Blues)
+
+
+def show_misrecognizd_images(model, data_loader, img_shape, class_names, device):
+    count = 0
+
+    # Display 50 images with "correct label : prediction"
+    plt.figure(figsize=(15, 20))
+    for x, t in data_loader:
+        # obtain predicted labels
+        x = x.to(device)            # send the data to the GPU/CPU
+        t = t.to(device)            # send the data to the GPU/CPU
+
+        y = model(x)
+        pred = torch.max(y, 1)[1]
+
+        for i in np.arange(x.shape[0]):
+            
+            if (pred[i] != t[i]):
+                ax = plt.subplot(10, 10, count+1)
+                img = x[i].cpu().numpy().copy()       # Tensor to NumPy
+                img = img.reshape(img_shape)
+                if(len(img_shape) == 3):
+                    img = np.transpose(img, (1, 2, 0)) # Change axis order (channel, row, column) -> (row, column, channel)
+                img = (img + 1)/2   # Revert the range of values ​​from [-1,1] to [0,1]
+
+                # show result
+                plt.imshow(img, cmap='gray')
+                ax.set_title(f't={class_names[t[i]]}  p={class_names[pred[i]]}')
+                ax.get_xaxis().set_visible(False)
+                ax.get_yaxis().set_visible(False)
+                count += 1
+                if count == 100:
+                    break
+        else:
+            continue
+        break
+
+    plt.show()
