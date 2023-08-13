@@ -126,6 +126,8 @@ def show_kernels(model, kernel_key, figsize=(20,1), subplotsize=16, img_max_num=
         break
 
 
+import torchvision.transforms as transforms     # Transforms
+
 def feature_to_img(feature, nrow=4, img_width=1000):
     feature = feature.unsqueeze(1)  # (N, H, W) -> (N, C, H, W)
     img = torchvision.utils.make_grid(feature.cpu(), nrow=nrow, normalize=True, pad_value=1)     # make images and arrange in a grid
