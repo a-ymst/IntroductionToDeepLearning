@@ -86,5 +86,57 @@ def show_misrecognizd_images(model, data_loader, img_shape, class_names, device)
         else:
             continue
         break
-
+        
     plt.show()
+
+
+def show_image(img, imgtype='np', cmap='gray', figsize=(10,6), vmin=None, vmax=None):
+    if(imgtype == "tensor"):
+        img = img.numpy()
+
+    if(imgtype == "np" or imgtype == "tensor"):
+        if(len(img.shape) == 3):
+            img = np.transpose(img, (1, 2, 0)) # Change axis order (channel, row, column) -> (row, column, channel)
+
+    plt.figure(figsize=figsize)
+    plt.imshow(img, cmap=cmap, vmin=vmin, vmax=vmax)
+    plt.show()
+
+def show_kernels(model, kernel_key, figsize=(20,1), subplotsize=16, img_max_num=48):
+    kernels = np.array(model.state_dict()[kernel_key].cpu())
+    kernel_num = kernels.shape[0]
+    channel_num = kernels.shape[1]
+
+    img_index = 0
+    for k in range(kernel_num):
+        for c in range(channel_num):
+            if(img_index % subplotsize == 0):
+                plt.show()
+                plt.figure(figsize=figsize)
+
+            plt.subplot(1, subplotsize, img_index % subplotsize + 1)
+            plt.tick_params(labelbottom=False, labelleft=False, labelright=False, labeltop=False, bottom=False, left=False, right=False, top=False)
+            plt.title(f"k,c:{k},{c}")
+            plt.imshow(kernels[k][c], cmap="gray")
+            img_index += 1
+            if(img_index >= img_max_num):
+                break
+        else:
+            continue
+        break
+
+
+def feature_to_img(feature, nrow=4, img_width=1000):
+    feature = feature.unsqueeze(1)  # (N, H, W) -> (N, C, H, W)
+    img = torchvision.utils.make_grid(feature.cpu(), nrow=nrow, normalize=True, pad_value=1)     # make images and arrange in a grid
+    img = transforms.functional.to_pil_image(img)    # tensor to  PIL Image
+    img_height = int(img_width * img.height / img.width)  # resize
+    img = img.resize((img_width, img_height))
+    return img
+
+
+def show_features(features, nrow=10):
+    for name, x in features.items():
+        img = feature_to_img(feature=x, nrow=nrow)
+        print(name, x.shape)
+        display(img)
