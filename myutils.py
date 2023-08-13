@@ -27,7 +27,7 @@ def show_learning_curve(h):
 
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-def show_confusion_matrix(model, data_loader, class_names):
+def show_confusion_matrix(model, data_loader, class_names, device):
 
     pred_list = []
     true_list = []
