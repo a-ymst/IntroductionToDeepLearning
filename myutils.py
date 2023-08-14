@@ -77,7 +77,7 @@ def show_misrecognizd_images(model, data_loader, img_shape, class_names, device)
 
                 # show result
                 plt.imshow(img, cmap='gray')
-                ax.set_title(f't={class_names[t[i]]}  p={class_names[pred[i]]}')
+                ax.set_title(f'{class_names[t[i]]}:{class_names[pred[i]]}')
                 ax.get_xaxis().set_visible(False)
                 ax.get_yaxis().set_visible(False)
                 count += 1
@@ -142,3 +142,34 @@ def show_features(features, nrow=10):
         img = feature_to_img(feature=x, nrow=nrow)
         print(name, x.shape)
         display(img)
+
+
+def save_checkpoint(model, optimizer, history, filepath):
+    checkpoint = {
+        'model_state_dict': model.to('cpu').state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'history': history
+        }
+    print("saving checkpoint '{}'".format(filepath))
+    torch.save(checkpoint, filepath)
+
+
+# Note: Input model & optimizer should be pre-defined.  This function only updates their states.
+import os
+def load_checkpoint(model, optimizer, filepath):
+
+    if os.path.isfile(filepath):
+        print("loading checkpoint '{}'".format(filepath))
+    else:
+        print("File not found: '{}'".format(filepath))
+        return
+
+    start_epoch = 0
+    checkpoint = torch.load(filepath)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    history = checkpoint['history']
+
+    print(checkpoint)
+
+    return model, optimizer, history
